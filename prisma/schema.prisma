@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// 申請テーブル
+model Application {
+  id                  Int               @id @default(autoincrement())
+  description         String // サーバーの説明/用途
+  minecraftVersion    String // 希望Minecraftバージョン
+  requestedPeriod     Int // 貸出希望期間（日数）
+  applicantDiscordId  String // 申請者のDiscordユーザーID
+  organizerDiscordId  String // 主催者のDiscordユーザーID
+  status              ApplicationStatus @default(PENDING)
+  pterodactylServerId String? // 割り当てられたPterodactylサーバーID
+  startDate           DateTime? // 貸出開始日
+  endDate             DateTime? // 貸出終了日
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  // リレーション
+  panelUsers ApplicationPanelUser[]
+  backups    BackupRecord[]
+
+  @@map("applications")
+}
+
+// パネル権限付与対象ユーザーのマスターテーブル
+model PanelUser {
+  id                  Int      @id @default(autoincrement())
+  discordUserId       String   @unique // パネル権限付与対象ユーザーのDiscordユーザーID
+  pterodactylUserId   Int? // PterodactylのユーザーID
+  pterodactylUsername String? // Pterodactylのユーザー名
+  pterodactylEmail    String? // Pterodactylのメールアドレス（[username]@kpw.local）
+  hasDiscordRole      Boolean  @default(false) // Discordロール付与フラグ
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // リレーション
+  applicationPanelUsers ApplicationPanelUser[]
+
+  @@map("panel_users")
+}
+
+// 申請とパネル権限付与対象ユーザーの中間テーブル
+model ApplicationPanelUser {
+  id            Int      @id @default(autoincrement())
+  applicationId Int
+  panelUserId   Int
+  createdAt     DateTime @default(now())
+
+  // リレーション
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  panelUser   PanelUser   @relation(fields: [panelUserId], references: [id], onDelete: Cascade)
+
+  @@unique([applicationId, panelUserId])
+  @@map("application_panel_users")
+}
+
+// バックアップ記録テーブル
+model BackupRecord {
+  id                  Int      @id @default(autoincrement())
+  applicationId       Int
+  pterodactylBackupId String // PterodactylのバックアップID
+  googleDriveFilePath String // Google Drive上のファイルパス
+  backupDate          DateTime // バックアップの作成日時
+  comment             String? // 管理者が入力した補足コメント
+  createdAt           DateTime @default(now())
+
+  // リレーション
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@map("backup_records")
+}
+
+// 申請ステータスの列挙型
+enum ApplicationStatus {
+  PENDING // 申請中（承認待ち）
+  ACTIVE // 貸出中
+  NEEDS_BACKUP // バックアップ待ち
+  RETURNED // 返却済み
+  REJECTED // 却下
+}

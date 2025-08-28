@@ -158,3 +158,9 @@ export abstract class SubcommandInteraction extends CommandBasedInteraction {
    */
   abstract onCommand(interaction: ChatInputCommandInteraction): Promise<void>;
 }
+
+// CommandBaseエイリアスを追加
+export /**
+        *
+        */
+const CommandBase = CommandInteraction;

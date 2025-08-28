@@ -4,6 +4,7 @@ import { Client, Events, GatewayIntentBits } from "discord.js";
 import CommandHandler from "./commands/CommandHandler.js";
 import commands from "./commands/commands.js";
 import { onMentionMessage } from "./eventHandler.js";
+import { ReminderService } from "./services/ReminderService.js";
 
 /**
  * Discord Client
@@ -28,6 +29,10 @@ client.on(
     await commandHandler.registerCommands();
 
     logger.info(`Interaction registration completed`);
+
+    // リマインダーサービスを開始
+    const reminderService = new ReminderService();
+    reminderService.startPeriodicCheck(60); // 60分間隔でチェック
   }),
 );
 client.on(

@@ -22,3 +22,7 @@ log4js.configure({
 
 /** Logger for log output */
 export const logger = log4js.getLogger("app");
+export /**
+        *
+        */
+const log = logger;

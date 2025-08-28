@@ -1,6 +1,24 @@
-# Example configuration
+# 設定ファイル例
 
-# Server IDs
+# Discord Guild IDs
 guild_ids = ["0000000000000000000"]
 
-# ↓ Add your settings here
+# Pterodactyl Panel設定
+[pterodactyl]
+api_url = "https://panel.example.com"
+api_key = "ptlc_your_api_key_here"
+excluded_discord_users = ["123456789012345678", "987654321098765432"] # 権限変更対象外のDiscordユーザーID
+
+# Discord設定
+[discord]
+panel_role_id = "0000000000000000000" # パネルアクセス用ロールID
+admin_role_ids = ["0000000000000000000"] # 管理者ロールID
+
+# Google Drive設定
+[google_drive]
+folder_path = "企画鯖ワールドデータ" # バックアップ保存先ベースフォルダ
+
+# リマインダー設定
+[reminders]
+days_before_expiry = [3, 1] # 期限切れ何日前にリマインドするか
+reminder_channel_id = "0000000000000000000" # リマインド送信先チャンネル

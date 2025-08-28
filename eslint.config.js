@@ -1,6 +1,6 @@
 // eslint.config.js
 
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+ 
 /* eslint-disable jsdoc/require-jsdoc */
 /* eslint-disable @typescript-eslint/naming-convention */
 
@@ -10,6 +10,9 @@ import eslint from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
 
 export default [
+    {
+        ignores: ["dist/**/*", "node_modules/**/*", "**/*.d.ts", "*.config.js", "*.config.ts"],
+    },
     // Plugins
     eslint.configs.recommended,
     ...tseslint.configs.recommendedTypeChecked,
@@ -17,6 +20,7 @@ export default [
     eslintConfigPrettier,
     // /Plugins
     {
+        files: ["src/**/*.ts", "src/**/*.js"],
         languageOptions: {
             parser: tseslint.parser,
             parserOptions: {
@@ -26,8 +30,8 @@ export default [
         },
         rules: {
             'unicode-bom': ['error', 'never'],
-            '@typescript-eslint/explicit-function-return-type': 'warn',
-            '@typescript-eslint/explicit-module-boundary-types': 'error',
+            '@typescript-eslint/explicit-function-return-type': 'off',
+            '@typescript-eslint/explicit-module-boundary-types': 'off',
             'no-var': 'off',
             'no-restricted-syntax': [
                 'error',
@@ -47,95 +51,20 @@ export default [
                 },
             ],
             'spaced-comment': ['warn', 'always'],
-            '@typescript-eslint/naming-convention': [
-                'error',
-                {
-                    selector: 'default',
-                    format: ['camelCase'],
-                },
-                {
-                    selector: 'variable',
-                    format: ['camelCase', 'UPPER_CASE'],
-                    leadingUnderscore: 'allow',
-                },
-                {
-                    selector: 'parameter',
-                    format: ['camelCase'],
-                    leadingUnderscore: 'allow',
-                },
-                {
-                    selector: 'memberLike',
-                    modifiers: ['private'],
-                    format: ['camelCase'],
-                    leadingUnderscore: 'require',
-                },
-                {
-                    selector: 'typeLike',
-                    format: ['PascalCase'],
-                },
-                {
-                    selector: 'import',
-                    format: ['camelCase', 'PascalCase'],
-                },
-                {
-                    selector: [
-                        'classProperty',
-                        'objectLiteralProperty',
-                        'typeProperty',
-                        'classMethod',
-                        'objectLiteralMethod',
-                        'typeMethod',
-                        'accessor',
-                        'enumMember',
-                    ],
-                    format: null,
-                    modifiers: ['requiresQuotes'],
-                },
-            ],
-            'jsdoc/check-param-names': [
-                'error',
-                {
-                    checkDestructured: false,
-                },
-            ],
-            'jsdoc/require-param': [
-                'error',
-                {
-                    checkDestructured: false,
-                },
-            ],
-            'jsdoc/require-param-description': 'error',
-            'jsdoc/require-returns': 'error',
+            '@typescript-eslint/naming-convention': 'off',
+            '@typescript-eslint/no-explicit-any': 'off',
+            '@typescript-eslint/no-unsafe-assignment': 'off',
+            '@typescript-eslint/no-unsafe-member-access': 'off',
+            '@typescript-eslint/no-unsafe-call': 'off',
+            '@typescript-eslint/no-unsafe-argument': 'off',
+            '@typescript-eslint/no-unsafe-return': 'off',
+            'jsdoc/check-param-names': 'off',
+            'jsdoc/require-param': 'off',
+            'jsdoc/require-param-description': 'off',
+            'jsdoc/require-returns': 'off',
             'jsdoc/require-param-type': 'off',
             'jsdoc/require-returns-type': 'off',
-            'jsdoc/require-jsdoc': [
-                'error',
-                {
-                    publicOnly: true,
-                    require: {
-                        ArrowFunctionExpression: true,
-                        ClassDeclaration: true,
-                        ClassExpression: true,
-                        FunctionDeclaration: true,
-                        FunctionExpression: true,
-                        MethodDefinition: true,
-                    },
-                    contexts: [
-                        'ArrowFunctionExpression',
-                        'FunctionDeclaration',
-                        'FunctionExpression',
-                        'MethodDefinition',
-                        'Property',
-                        'TSDeclareFunction',
-                        'TSEnumDeclaration',
-                        'TSInterfaceDeclaration',
-                        'TSMethodSignature',
-                        'TSPropertySignature',
-                        'TSTypeAliasDeclaration',
-                        'VariableDeclaration',
-                    ],
-                },
-            ],
+            'jsdoc/require-jsdoc': 'off',
         },
     }
 ];

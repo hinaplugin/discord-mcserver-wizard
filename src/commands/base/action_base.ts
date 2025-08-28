@@ -28,7 +28,6 @@ abstract class ActionInteraction<
    */
   protected createCustomId(data?: Record<string, string>): string {
     const params = new URLSearchParams({
-      // eslint-disable-next-line @typescript-eslint/naming-convention
       _: this._id,
       ...data,
     });
@@ -104,7 +103,6 @@ export abstract class MessageComponentActionInteraction<
   /** @inheritdoc */
   protected override createCustomId(data?: Record<string, string>): string {
     return super.createCustomId({
-      // eslint-disable-next-line @typescript-eslint/naming-convention
       _t: `${this._type}`,
       ...data,
     });
@@ -149,7 +147,6 @@ export abstract class ModalActionInteraction extends ActionInteraction<ModalSubm
   /** @inheritdoc */
   protected override createCustomId(data?: Record<string, string>): string {
     return super.createCustomId({
-      // eslint-disable-next-line @typescript-eslint/naming-convention
       _t: "m",
       ...data,
     });

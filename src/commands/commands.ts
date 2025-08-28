@@ -1,8 +1,10 @@
 import { InteractionBase } from "./base/interaction_base.js";
-import helloCommands from "./hello_command/commands.js";
+import { commands as serverRentalCommands } from "./server_rental/commands.js";
+import { commands as adminCommands } from "./admin/commands.js";
 
 const commands: InteractionBase[] = [
-  ...helloCommands,
+  ...serverRentalCommands,
+  ...adminCommands,
   // Add other command group lists here
 ];
 

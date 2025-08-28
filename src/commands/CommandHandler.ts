@@ -1,4 +1,9 @@
 import { ApplicationCommandDataResolvable, Interaction } from "discord.js";
+import {
+  onModalSubmit,
+  onButtonInteraction,
+  onSelectMenuInteraction,
+} from "../eventHandler.js";
 import { client } from "../index.js";
 import { logger } from "../utils/log.js";
 import { InteractionBase } from "./base/interaction_base.js";
@@ -70,6 +75,24 @@ export default class CommandHandler {
    */
   async onInteractionCreate(interaction: Interaction): Promise<void> {
     try {
+      // モーダル送信の場合は専用ハンドラーで処理
+      if (interaction.isModalSubmit()) {
+        await onModalSubmit(interaction);
+        return;
+      }
+
+      // ボタンインタラクションの場合は専用ハンドラーで処理
+      if (interaction.isButton()) {
+        await onButtonInteraction(interaction);
+        return;
+      }
+
+      // セレクトメニューインタラクションの場合は専用ハンドラーで処理
+      if (interaction.isStringSelectMenu()) {
+        await onSelectMenuInteraction(interaction);
+        return;
+      }
+
       // Process all commands
       await Promise.all(
         this._commands.map((command) =>

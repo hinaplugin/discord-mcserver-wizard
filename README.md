@@ -1,137 +1,193 @@
-# Robust TypeScript Template for Discord.js Bot Development
+# Discord Minecraft Server Management Bot
 
-This is a template for building robust and scalable Discord bots using TypeScript and Discord.js.  
-It is fully compatible with VSCode, allowing you to run and debug your bot with ease.  
-The project includes ESLint and Prettier for enforcing code quality, and uses Husky to ensure clean commits.  
-It also features a modular slash command system and optional Prisma integration for database access.
+MinecraftサーバーのPterodactylパネルと連携し、Discord上でサーバー貸出申請から返却までを自動化するDiscord Botです。
 
-## 🚀 Features
+## 🚀 機能
 
-- **Discord.js Interaction Command System**  
-  Define slash commands as individual files inside the `src/commands` directory.  
-  Easy to read and maintain — each command is self-contained.
+### ユーザー向け機能
+- **サーバー貸出申請フォーム** (`/server-rental`)
+  - Discord上でサーバーの貸出申請を行える
+  - 申請者、主催者、パネル権限付与対象ユーザーの3種類のユーザータイプに対応
+  - Minecraftバージョン、期間、用途の詳細入力
 
-- **Prisma-ready**  
-  Includes setup for using [Prisma](https://www.prisma.io/) as your ORM with SQL databases.  
-  If you don’t need it, see [Removing Prisma](#removing-prisma) below.
+### 管理者向け機能
+- **申請管理** (`/server-admin applications`)
+  - 承認待ち申請一覧の表示
+  - ワンクリック承認/却下システム
+  - 自動メール設定とPterodactylユーザー作成
 
-- **VSCode Ready**  
-  Comes with launch configurations for debugging directly in VSCode using `F5`.
+- **システム状況表示** (`/server-admin status`)
+  - 現在のサーバー使用状況
+  - アクティブな申請数の確認
 
-- **ESLint & Prettier**  
-  Enforces strict code style and formatting.
-  - Auto-fix on save for common issues.
-  - Requires return types and JSDoc for better maintainability.
+- **返却管理** (`/server-admin returns`)
+  - 返却待ちサーバー一覧
+  - バックアップ選択機能
+  - Google Driveへの自動バックアップ保存
 
-- **Husky & lint-staged**  
-  Runs lint and formatting checks before each commit for consistent code quality.
+### 自動化機能
+- **期限切れリマインド通知**
+  - 主催者への期限切れ前通知（設定可能）
+  - 期限切れ時の自動ステータス変更
 
-- **Modern ESM Support**  
-  Uses ESM syntax (`import/export`) out of the box.
+- **サーバー自動割り当て**
+  - Pterodactylパネル上でのユーザー作成
+  - 自動サーバー割り当てとDiscordロール付与
 
-## 📦 Getting Started
+- **バックアップ・返却処理**
+  - 管理者による選択式バックアップ作成
+  - RCloneを使用したGoogle Driveへの自動バックアップ
+  - サーバー初期化と権限剥奪の自動実行
 
-1. Clone the repository:
+## 📦 セットアップ
+
+### 前提条件
+- Node.js 18+
+- PostgreSQL（または他のPrisma対応データベース）
+- Pterodactyl Panel
+- Google Drive（バックアップ保存用）
+- RClone（Google Drive連携用）
+
+### インストール
+
+1. リポジトリをクローン:
    ```bash
-   git clone https://github.com/Kamesuta/discordjs-typescript-template.git
-   cd discordjs-typescript-template
+   git clone <repository-url>
+   cd discord-mcserver-wizard
    ```
 
-2. Install dependencies:
+2. 依存関係をインストール:
    ```bash
    npm install
    ```
 
-3. Set up your environment variables and config:
-   - Copy the `run/config.example.toml` file to `run/config.toml` and edit it as needed.
-    ```toml
-    # Server IDs
-    guild_ids = ["0000000000000000000"]
-    ```
-   - Copy the `.env.example` file to `.env` and set your Discord bot token:
-    ```env
-    DISCORD_TOKEN=your_token_here
-    ```
-
-3. Run the bot:
-   ```bash
-   npm run start
-   ```
-
-4. Lint and format:
-   ```bash
-   npm run lint
-   npm run prettier
-   ```
-
-## 📁 Project Structure
-
-```
-prisma/                # Prisma schema and client
-src/
-├── commands/          # 1 file = 1 slash command
-├── utils/               # Utilities (e.g., logging, config)
-└── index.ts           # Bot entry point
-```
-
-## 🎮 Adding a New Command
-To add a new command to the Discord bot:
-
-1. Create a new command file in the appropriate directory:
-   ```ts
-   // src/commands/hello_command/HelloExampleCommand.ts
-   import { ChatInputCommandInteraction, SlashCommandSubcommandBuilder } from 'discord.js';
-   import { SubcommandInteraction } from '../base/command_base.js';
-   import helloCommand from './HelloCommand.js';
-
-   class HelloExampleCommand extends SubcommandInteraction {
-      command = new SlashCommandSubcommandBuilder()
-         .setName('example')
-         .setDescription('Example command');
-
-      async onCommand(interaction: ChatInputCommandInteraction): Promise<void> {
-         await interaction.reply({ content: 'Hello world!' });
-      }
-   }
-
-   export default new HelloExampleCommand(helloCommand);
-   ```
-2. Register the command in the appropriate commands list file:
-   ```ts
-   // src/commands/hello_command/commands.ts
-   import helloExampleCommand from './HelloExampleCommand.js';
-
-   const commands: InteractionBase[] = [
-      // existing commands...
-      helloExampleCommand, // Add your new command here
-   ];
-   ```
-That's it! The command system will automatically register your new command with Discord when the bot starts.  
-You can now use the command in Discord by typing `/hello example`.
-
-## 🗑 Removing Prisma
-
-If you don’t need a database:
-
-1. Remove `import { PrismaClient }` and `new PrismaClient()` lines  from `src/index.ts`.
-2. Remove `heroku-postbuild` line from `package.json`.
-3. Uninstall the Prisma packages:
-   ```bash
-   npm uninstall prisma @prisma/client
-   ```
-
-## 🗄 Using Prisma
-
-If you want to use Prisma:
-
-1. npx prisma init
-2. Edit the `prisma/schema.prisma` file to set up your database connection and models.
-3. Add your database connection string to the `.env` file:
-   ```env
-   DATABASE_URL=your_database_connection_string
-   ```
-4. Run the following command to generate the Prisma client and create the initial migration:
+3. データベースを初期化:
    ```bash
    npx prisma generate
-   npx prisma migrate dev --name init
+   npx prisma migrate dev
    ```
+
+4. 設定ファイルを作成:
+   ```bash
+   cp run/config.example.toml run/config.toml
+   cp .env.example .env
+   ```
+
+### 設定
+
+#### .env ファイル
+```env
+DISCORD_TOKEN=your_discord_bot_token
+DATABASE_URL="postgresql://username:password@localhost:5432/database"
+```
+
+#### run/config.toml ファイル
+```toml
+# Discord Guild IDs
+guild_ids = ["your_guild_id"]
+
+# Pterodactyl Panel設定
+[pterodactyl]
+api_url = "https://panel.example.com"
+api_key = "ptlc_your_api_key_here"
+excluded_discord_users = ["123456789012345678"] # 管理者のDiscordユーザーID
+
+# Discord設定
+[discord]
+panel_role_id = "role_id_here" # パネルアクセス用ロールID
+admin_role_ids = ["admin_role_id"] # 管理者ロールID
+
+# Google Drive設定
+[google_drive]
+folder_path = "企画鯖ワールドデータ" # バックアップ保存先フォルダ
+
+# リマインダー設定
+[reminders]
+days_before_expiry = [3, 1] # 期限切れ何日前にリマインドするか
+reminder_channel_id = "channel_id_here" # リマインド送信先チャンネル
+```
+
+### 起動
+
+```bash
+npm run start
+```
+
+開発モードで起動:
+```bash
+npm run dev
+```
+
+## 🗂️ プロジェクト構造
+
+```
+discord-mcserver-wizard/
+├── prisma/
+│   └── schema.prisma          # データベーススキーマ
+├── src/
+│   ├── commands/
+│   │   ├── admin/             # 管理者向けコマンド
+│   │   ├── server_rental/     # サーバー貸出申請コマンド
+│   │   └── base/              # コマンドベースクラス
+│   ├── services/
+│   │   ├── PterodactylService.ts      # Pterodactyl API連携
+│   │   ├── ServerAssignmentService.ts # サーバー割り当て処理
+│   │   ├── ReminderService.ts         # リマインダー機能
+│   │   └── BackupService.ts           # バックアップ・返却処理
+│   ├── utils/
+│   │   ├── config.ts          # 設定管理
+│   │   ├── database.ts        # データベース接続
+│   │   └── log.ts             # ログ設定
+│   ├── eventHandler.ts        # Discord イベントハンドラー
+│   └── index.ts               # エントリーポイント
+├── run/
+│   └── config.example.toml    # 設定ファイルテンプレート
+└── spec/
+    └── 要件定義書.md          # 詳細な要件定義
+```
+
+## 🎮 使用方法
+
+### ユーザー操作
+1. `/server-rental` コマンドでサーバー貸出申請
+2. モーダルフォームに必要事項を入力
+3. 管理者の承認を待機
+4. 承認後、自動的にサーバーが割り当てられDiscordロールが付与
+
+### 管理者操作
+1. `/server-admin applications` で承認待ち申請を確認
+2. 承認/却下ボタンで申請を処理
+3. `/server-admin returns` で返却待ちサーバーを確認
+4. バックアップを選択して返却処理を実行
+
+## 🔧 開発
+
+### リント・フォーマット
+```bash
+npm run lint
+npm run prettier
+```
+
+### データベース操作
+```bash
+# マイグレーション作成
+npx prisma migrate dev --name migration_name
+
+# データベースリセット
+npx prisma migrate reset
+
+# Prisma Studio起動
+npx prisma studio
+```
+
+## 📝 ライセンス
+
+このプロジェクトはMITライセンスの下で公開されています。
+
+## 🤝 貢献
+
+バグ報告や機能提案は、GitHubのIssuesでお願いします。
+
+## 📚 詳細仕様
+
+詳細な要件定義については `spec/要件定義書.md` を参照してください。
